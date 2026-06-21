@@ -1,1 +1,71 @@
-GITIGNORE_PLACEHOLDER
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# MLflow
+mlruns/
+mlartifacts/
+mlflow.db
+
+# Evidently reports
+*.html
+
+# Artifacts / Pickle models
+*.pkl
+*.joblib
+
+# SHAP / Plots
+*.png
+
+# Conda
+*.conda-meta
+
+# Profile data
+.prof
+
+# Logs
+*.log
+
+# Environment variables
+.env
