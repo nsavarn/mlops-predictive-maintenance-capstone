@@ -1,170 +1,109 @@
-# MLOps Capstone: Predictive Maintenance System
+# Industrial Predictive Maintenance
 
-**Author:** Narendra Tiwari  
-**Program:** IIIT-B & upGrad MLOps Program  
-**License:** MIT License
+## An End-to-End MLOps Governance Framework for Detecting Machine Failure Risk, Monitoring Statistical Drift, and Triggering Evidence-Based Retraining Decisions
 
----
+This repository contains a production-style MLOps governance framework for industrial predictive maintenance. The project treats the capstone as a live production crisis: preventing unplanned factory downtime by proving that structurally valid data can still become statistically dangerous.
 
-## Project Overview
+## Business Context
 
-This repository contains the end-to-end MLOps capstone project for building a Predictive Maintenance classification system. The project implements a production-grade ML pipeline covering data validation, model training, experiment tracking, hyperparameter tuning, drift monitoring, and explainability analysis.
+Unplanned factory downtime can cost approximately Rs. 8-15 lakh per hour. The goal is to build a closed-loop governance pipeline that detects when the operating environment has moved outside the model's familiar statistical territory, even when the raw data still passes standard schema validation.
 
-The target task: **Classify machine operational state** (Normal, Warning, Failure) based on sensor readings and process measurements.
+## Architecture
 
----
-
-## Repository Structure
-
+```text
+Raw IoT Stream
+  -> Pandera Quality Gate
+  -> MLflow Ledger + Optuna
+  -> Evidently Drift Radar
+  -> SHAP Explainability
 ```
-mlops-predictive-maintenance-capstone/
-├── .gitignore
-├── LICENSE                     # MIT License
-├── README.md                   # This file
-├── requirements.txt            # Pinned Python dependencies
-├── MLOps_Assignment_Narendra_Tiwari.ipynb   # Main notebook (submission artifact)
+
+## Repository Layout
+
+```text
+.
 ├── data/
-│   ├── train.csv               # Training dataset
-│   ├── current.csv             # Current production data (for drift)
-│   └── stress.csv              # Stressed/degraded production data
+│   ├── train.csv
+│   ├── current.csv
+│   └── stress.csv
+├── notebooks/
+│   └── MLOps_Assignment_Narendra_Tiwari.ipynb
 ├── artifacts/
-│   ├── best_model.pkl          # Serialized best model
-│   ├── label_encoder.pkl       # LabelEncoder fitted on train
-│   ├── shap_per_class.png      # Multiclass SHAP visualization
-│   ├── drift_current.html      # Evidently drift report (current data)
-│   ├── drift_stress.html       # Evidently drift report (stressed data)
-│   └── eda_distributions.png   # EDA distribution plots
 ├── reports/
-│   ├── capstone_summary.md     # Executive summary
-│   └── architecture.md         # Pipeline architecture documentation
-└── run_capstone.sh             # One-click execution script
+│   ├── architecture.md
+│   ├── capstone_summary.md
+│   └── model_drift_and_explainability_report.md
+├── scripts/
+│   ├── scaffold_repository.sh
+│   └── run_capstone.sh
+├── LICENSE
+├── requirements.txt
+├── README.md
+└── .gitignore
 ```
 
----
+## MLOps Phases
 
-## Technology Stack
+1. Structural integrity with Pandera schema checks.
+2. Class balancing and optimization with stratified splitting, SMOTE, Optuna, and MLflow.
+3. Statistical observability with Evidently drift reports for current and stress data.
+4. Physics-informed explainability with SHAP, mechanical power, and thermal delta features.
 
-- **Data Validation:** Pandera
-- **Experiment Tracking:** MLflow
-- **Hyperparameter Tuning:** Optuna
-- **Drift Detection:** Evidently AI
-- **Explainability:** SHAP (TreeExplainer)
-- **Modeling:** scikit-learn (Random Forest, XGBoost, Logistic Regression, SGD)
+## Recommended Environment
 
----
+Use a native Python virtual environment as the primary submission path. The grading rubric focuses on Pandera validation, MLflow experimentation, Optuna tuning, Evidently monitoring, SHAP explainability, and engineering conclusions, not containerization.
 
-## Installation
+Docker can be added later as a portfolio enhancement and positioned as a production deployment accelerator.
+
+## Setup
 
 ```bash
-# Clone the repository
-git clone https://github.com/nsavarn/mlops-predictive-maintenance-capstone.git
-cd mlops-predictive-maintenance-capstone
-
-# Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate      # Linux/Mac
-venv\Scripts\activate         # Windows
-
-# Install dependencies
+python -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
----
+On Windows PowerShell:
 
-## Quick Start
-
-```bash
-# Run the full capstone pipeline
-bash run_capstone.sh
-
-# Or manually execute the notebook
-jupyter notebook MLOps_Assignment_Narendra_Tiwari.ipynb
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 ```
 
----
+## Execution
 
-## Pipeline Sections
+```bash
+bash scripts/run_capstone.sh
+```
 
-### Section 1: Data Loading and Validation
-- Load train.csv, current.csv, and stress.csv
-- **Pandera** schema validation ensuring data integrity across all datasets
-- Column types: Air_temperature (float64), Process_temperature (float64), etc.
-- Stress data passes schema but is statistically drifted
+Or launch the notebook manually:
 
-### Section 2: EDA and Feature Engineering
-- Distribution analysis across target classes
-- Target class balance exploration
-- Engineered features:
-  - **Power_W** = Voltage * Current
-  - **Temp_diff** = Process_temperature - Air_temperature
-- Correlation analysis and summary statistics
-- SMOTE applied **only after** stratified 80/20 train/validation split
+```bash
+jupyter notebook notebooks/MLOps_Assignment_Narendra_Tiwari.ipynb
+```
 
-### Section 3: Model Training and Evaluation
-- Baseline: Dummy classifier (most_frequent strategy)
-- Models: Random Forest, XGBoost, Logistic Regression, SGD
-- **Primary metric: macro F1** (not accuracy)
-- Per-class F1 scores reported
-- **MLflow** experiment tracking with all metrics logged
-- **Optuna** hyperparameter tuning for best model
+Expected generated outputs:
 
-### Section 4: Drift Monitoring
-- **Evidently AI** drift reports comparing current/stress to training
-- Data drift quantification across all features
-- Two drift reports generated:
-  - `drift_current.html` - Current production data
-  - `drift_stress.html` - Stressed/shifted production data
+```text
+artifacts/eda_distributions.png
+artifacts/drift_current.html
+artifacts/drift_stress.html
+artifacts/shap_per_class.png
+artifacts/best_model.pkl
+artifacts/label_encoder.pkl
+```
 
-### Section 5: Explainability (SHAP) and Conclusions
-- **Multiclass SHAP** per-class explanations
-- `shap_per_class.png` - Global SHAP feature importance
-- SHAP insights connected to retraining decisions
-- **Concrete retraining recommendations** based on drift + SHAP evidence
+## Governance Rules
 
----
-
-## Key Design Decisions
-
-| Decision | Rationale |
-|----------|----------|
-| macro F1 as primary metric | Balanced performance across all 3 classes |
-| SMOTE after train/validation split | Prevents data leakage |
-| Pandera schema across all datasets | Data quality gate for production |
-| Per-class SHAP (not global) | Multiclass interpretability |
-| Drift + SHAP for retraining decision | Evidence-based lifecycle management |
-
----
-
-## Execution and Outputs
-
-Running `MLOps_Assignment_Narendra_Tiwari.ipynb` produces:
-
-- **MLflow artifacts:** All metrics, parameters, and models logged
-- **best_model.pkl:** Serialized best-performing model
-- **label_encoder.pkl:** Encoders fitted on training data
-- **drift_current.html / drift_stress.html:** Interactive Evidently reports
-- **shap_per_class.png:** SHAP summary bar chart
-- **eda_distributions.png:** EDA visualization
-
----
-
-## Governance Notes
-
-- All random seeds set for reproducibility (random_state=42)
-- LabelEncoder fitted **only** on training data
-- SMOTE k_neighbors=3 for stable synthetic samples
-- Stress data validates schema but shows statistical drift
-
----
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## Contact
-
-**Narendra Tiwari**  
-AI Architect | MLOps Specialist  
-GitHub: [@nsavarn](https://github.com/nsavarn)
+| Rule | Why it matters |
+|---|---|
+| Pandera validates all datasets | Confirms structural integrity and physical bounds. |
+| SMOTE runs only after the stratified split | Prevents synthetic samples from leaking into validation data. |
+| SMOTE uses k_neighbors=3 | Handles rare machine-failure classes more safely. |
+| Macro-F1 drives model selection | Prevents high accuracy from hiding poor rare-class performance. |
+| MLflow stores metrics and artifacts | Creates an experiment ledger for model governance. |
+| Evidently compares train vs current/stress | Separates schema validity from statistical stability. |
+| SHAP is interpreted per class | Connects predictions to actionable maintenance diagnostics. |
